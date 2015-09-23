@@ -1,7 +1,7 @@
 package utils_test
 
 import (
-	. "hillsorcerer.com/utils"
+	. "github.com/bkroeze/go.utils"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
