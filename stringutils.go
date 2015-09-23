@@ -1,6 +1,40 @@
 package utils
 
-import "strings"
+import (
+	"fmt"
+	"strings"
+)
+
+func GetTokenPositions(startToken, endToken, template string) (int, int, bool) {
+	start := strings.Index(template, startToken)
+	last := strings.Index(template, endToken)
+	ok := (start > -1 && start < last)
+	return start, last, ok
+}
+
+func InsertTextBetween(startToken, endToken, template, insertion string) string {
+	cleaned, changed := RemoveTextBetween(startToken, endToken, template)
+	if !changed {
+		return template
+	}
+	start, last, ok := GetTokenPositions(startToken, endToken, cleaned)
+	if !ok {
+		return cleaned
+	}
+	return fmt.Sprintf("%s%s%s",
+		cleaned[:start+len(startToken)],
+		insertion,
+		cleaned[last:])
+	//return strings.Replace(cleaned, startToken+endToken, startToken+insertion+endToken, 1)
+}
+
+func RemoveTextBetween(startToken, endToken, template string) (string, bool) {
+	start, last, ok := GetTokenPositions(startToken, endToken, template)
+	if !ok {
+		return template, false
+	}
+	return template[:start+len(startToken)] + template[last:], true
+}
 
 func SplitCSVStringIntoFields(line string) ([]string, error) {
 

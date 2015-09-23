@@ -76,4 +76,88 @@ var _ = Describe("Stringutils", func() {
 			Expect(parsed[1]).To(ConsistOf([]string{"three", "four"}))
 		})
 	})
+
+	Context("Inserting text", func() {
+		It("Should find the start and end tokens of a string", func() {
+			template := "<a></a>"
+			start, end, ok := GetTokenPositions("<a>", "</a>", template)
+			Expect(ok).To(BeTrue())
+			Expect(start).To(Equal(0))
+			Expect(end).To(Equal(3))
+		})
+
+		It("Should find the start and end tokens of a multiline string", func() {
+			template := `<a>
+test
+</a>`
+			start, end, ok := GetTokenPositions("<a>", "</a>", template)
+			Expect(ok).To(BeTrue())
+			Expect(start).To(Equal(0))
+			Expect(end).To(Equal(9))
+		})
+
+		It("Should remove text between tokens", func() {
+			template := "<a>test</a>"
+			expected := "<a></a>"
+			result, changed := RemoveTextBetween("<a>", "</a>", template)
+			Expect(changed).To(BeTrue())
+			Expect(result).To(Equal(expected))
+		})
+
+		It("Should remove text between tokens in a multiline string", func() {
+			template := `<a>
+test
+</a>`
+			expected := "<a></a>"
+			result, changed := RemoveTextBetween("<a>", "</a>", template)
+			Expect(changed).To(BeTrue())
+			Expect(result).To(Equal(expected))
+		})
+
+		It("Should not remove anything if token not found", func() {
+			template := "<a>test"
+			expected := "<a>test"
+			result, changed := RemoveTextBetween("<a>", "</a>", template)
+			Expect(changed).To(BeFalse())
+			Expect(result).To(Equal(expected))
+		})
+
+		It("Should insert text between HTML comment tags", func() {
+			template := "<!-- test --><!-- /test -->"
+			expected := "<!-- test -->inserted<!-- /test -->"
+			Expect(InsertTextBetween("<!-- test -->", "<!-- /test -->", template, "inserted")).To(Equal(expected))
+		})
+
+		It("Should work on multiline tags", func() {
+			template := `
+Test
+<!-- runetable -->
+Inside
+<!-- /runetable -->
+`
+			expected := `
+Test
+<!-- runetable -->Inserted<!-- /runetable -->
+`
+			Expect(InsertTextBetween("<!-- runetable -->", "<!-- /runetable -->", template, "Inserted")).To(Equal(expected))
+		})
+
+		It("Should work on multiline tags 2", func() {
+			template := "test\n <a>\nfoo\n</a>"
+			expected := "test\n <a>Inserted</a>"
+			Expect(InsertTextBetween("<a>", "</a>", template, "Inserted")).To(Equal(expected))
+		})
+
+		It("Should insert text between tags, removing the prior text", func() {
+			template := "<!-- test -->\nfoo\n<!-- /test -->"
+			expected := "<!-- test -->inserted<!-- /test -->"
+			Expect(InsertTextBetween("<!-- test -->", "<!-- /test -->", template, "inserted")).To(Equal(expected))
+		})
+
+		It("Should not insert or remove anything if both tags are not found", func() {
+			template := "<!-- test -->foo<!-- /xxx -->"
+			Expect(InsertTextBetween("<!-- test -->", "<!-- /test -->", template, "inserted")).To(Equal(template))
+		})
+
+	})
 })
