@@ -105,5 +105,8 @@ func SplitMultilineCSV(raw string, skipFirst bool) ([][]string, error) {
 	}
 
 	return parsed, nil
+}
 
+func ToProperCase(raw string) string {
+	return strings.Title(raw[0:1]) + raw[1:]
 }
