@@ -5,6 +5,25 @@ import (
 	"strings"
 )
 
+func GetMaxLengthsOfStrings(data [][]string) []int {
+	fieldLens := make([]int, len(data[0]))
+	for i := 0; i < len(fieldLens); i++ {
+		fieldLens[i] = 0
+	}
+
+	for recordIx := 0; recordIx < len(data); recordIx++ {
+		record := data[recordIx]
+		for fieldIx := 0; fieldIx < len(record); fieldIx++ {
+			thisLen := len(record[fieldIx])
+			if fieldLens[fieldIx] < thisLen {
+				fieldLens[fieldIx] = thisLen
+			}
+		}
+	}
+	return fieldLens
+
+}
+
 func GetTokenPositions(startToken, endToken, template string) (int, int, bool) {
 	start := strings.Index(template, startToken)
 	last := strings.Index(template, endToken)

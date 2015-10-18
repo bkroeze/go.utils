@@ -8,6 +8,16 @@ import (
 )
 
 var _ = Describe("Stringutils", func() {
+	Context("Utility", func() {
+		It("Should get the max lengths of strings", func() {
+			data := make([][]string, 2)
+			data[0] = []string{"one", "two"}
+			data[1] = []string{"three", "four"}
+			theLengths := GetMaxLengthsOfStrings(data)
+			Expect(theLengths).To(BeEquivalentTo([]int{5, 4}))
+		})
+	})
+
 	Context("Parsing a CSV line", func() {
 		It("Should parse a simple line into fields", func() {
 			line := "one,two,three"
